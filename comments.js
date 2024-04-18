@@ -1,74 +1,69 @@
-//create web server
-const express = require('express');
-const app = express();
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-});
-
-//use path module to get the path of the file
-const path = require('path');
-const filePath = path.join(__dirname, 'comments.json');
-
-//use fs module to read and write to the file
+//crie um servidor web
+const http = require('http');
 const fs = require('fs');
+const path = require('path');
 
-//middleware to parse json data
-app.use(express.json());
-
-//GET request to return all comments
-app.get('/comments', (req, res) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
+//crie um servidor web
+http.createServer((req, res) => {
+    //leia o arquivo comments.json
+    fs.readFile(path.join(__dirname, 'comments.json'), 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('An error occurred while reading the file.');
-        } else {
-            res.send(JSON.parse(data));
+            console.error(err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Internal server error' }));
+            return;
         }
+
+        //escreva o conteúdo do arquivo na resposta
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(data);
     });
+}).listen(3000, () => {
+    console.log('Server is listening on port 3000');
 });
 
-//POST request to add a new comment
-app.post('/comments', (req, res) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
+//execute o servidor e acesse http://localhost:3000 no navegador
+
+// Path: index.js
+//crie um servidor web
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+//crie um servidor web
+http.createServer((req, res) => {
+    //leia o arquivo index.html
+    fs.readFile(path.join(__dirname, 'index.html'), 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('An error occurred while reading the file.');
-        } else {
-            const comments = JSON.parse(data);
-            const newComment = req.body;
-            comments.push(newComment);
-            fs.writeFile(filePath, JSON.stringify(comments), (err) => {
-                if (err) {
-                    res.status(500).send('An error occurred while writing the file.');
-                } else {
-                    res.send('Comment added successfully.');
-                }
-            });
+            console.error(err);
+            res.writeHead(500, { 'Content-Type': 'text/html' });
+            res.end('<h1>Internal server error</h1>');
+            return;
         }
+
+        //escreva o conteúdo do arquivo na resposta
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(data);
     });
+}).listen(3000, () => {
+    console.log('Server is listening on port 3000');
 });
 
-//PUT request to update a comment
-app.put('/comments/:id', (req, res) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            res.status(500).send('An error occurred while reading the file.');
-        } else {
-            const comments = JSON.parse(data);
-            const id = req.params.id;
-            const updatedComment = req.body;
-            const index = comments.findIndex((comment) => comment.id === id);
-            if (index === -1) {
-                res.status(404).send('Comment not found.');
-            } else {
-                comments[index] = updatedComment;
-                fs.writeFile(filePath, JSON.stringify(comments), (err) => {
-                    if (err) {
-                        res.status(500).send('An error occurred while writing the file.');
-                    } else {
-                        res
-                    }
-                });
-            }
-        }
-    });
-});
+//execute o servidor e acesse http://localhost:3000 no navegador
+
+// Path: index.html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments</title>
+</head>
+
+<body>
+    <h1>Comments</h1>
+    <ul id="comments"></ul>
+    <script src="index.js"></script>
+</
